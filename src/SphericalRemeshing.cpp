@@ -439,3 +439,16 @@ void SphericalRemeshing::saveDeformedSphere(const char *filename)
 	m_sphere_subj->saveFile(filename, "vtk");
 }
 
+void SphericalRemeshing::saveBary(const char *filename)
+{
+	FILE *fp = fopen(filename, "w");
+	for (int i = 0; i < m_sphere->nVertex(); i++)
+	{
+		float coeff[3];
+		Vertex *v = (Vertex *)m_sphere->vertex(i);
+		int id = m_tree->closestFace((float *)v->fv(), coeff);
+		fprintf(fp, "%d %f %f %f\n", id, coeff[0], coeff[1], coeff[2]);
+	}
+	fclose(fp);
+}
+

@@ -49,6 +49,11 @@ int main(int argc, char* argv[])
 		cout << outputProp.c_str() << endl;
 		SR->saveDeformedProperty(outputProp.c_str());
 	}
+	if (!bary.empty())
+	{
+		cout << bary.c_str() << endl;
+		SR->saveBary(bary.c_str());
+	}
 
 	delete SR;
 	

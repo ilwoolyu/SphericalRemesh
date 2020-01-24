@@ -29,6 +29,7 @@ public:
 	void saveDeformedSurface(const char *filename);
 	void saveDeformedSphere(const char *filename);
 	void saveDeformedProperty(const char *filename);
+	void saveBary(const char *filename);
 	
 private:
 	void reconsCoord(const float *v0, float *v1, float *Y, float *coeff, int degree, float *pole, float *tan1, float *tan2);
