@@ -1,25 +1,17 @@
-#include <string>
-
-#include "SRemeshCLP.h"
 #include "SphericalRemeshing.h"
+#include "PARSE_ARGS.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char **argv)
 {
-	PARSE_ARGS;
-	
-	if (argc < 2)
-	{
-		std::cout << "Usage: " << argv[0] << " --help" << std::endl;
-		return -1;
-	}
-	
+    PARSE_ARGS(argc, argv);
+
 	char *subject = NULL;
 	if (!input.empty()) subject = (char *) input.c_str();
 	char *dfield = NULL;
 	if (!coeff.empty()) dfield = (char *) coeff.c_str();
 	char *sphere_ = (char *) sphere.c_str();
 	char *reference = NULL;
-	if (!ref.empty()) reference = (char *) ref.c_str();
+	if (!refSphere.empty()) reference = (char *) refSphere.c_str();
 	char *dsphere = NULL;
 	if (!deform.empty()) dsphere = (char *) deform.c_str();
 	char *colormap = NULL;

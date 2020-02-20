@@ -1,13 +1,24 @@
 project(SphericalRemesh)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 
-find_package(SlicerExecutionModel REQUIRED)
+set (CMAKE_CXX_STANDARD 11)
 
-include(${SlicerExecutionModel_USE_FILE})
-include(${GenerateCLP_USE_FILE})
+set(CLI11_VER "1.9.0" CACHE STRING "CLI11 Version: see https://github.com/CLIUtils/CLI11/releases")
+mark_as_advanced(CLI11_VER)
+set(CLI11_DIRS ${CMAKE_BINARY_DIR}/CMakeFiles/CLI11)
+file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v${CLI11_VER}/CLI11.hpp ${CLI11_DIRS}/CLI11.hpp)
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+	message(STATUS "Setting build type to 'Release' as none was specified.")
+	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+	mark_as_advanced(CMAKE_BUILD_TYPE)
+	# Set the possible values of build type for cmake-gui
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
 include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
 
-generateCLP(SRemeshCLP ${CMAKE_SOURCE_DIR}/wrapper/SRemesh.xml)
+include_directories(${CLI11_DIRS})
 
 # MESH library
 find_package(MeshLib REQUIRED)
