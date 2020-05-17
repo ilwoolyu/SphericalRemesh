@@ -1,6 +1,12 @@
 project(SphericalRemesh)
 cmake_minimum_required(VERSION 3.5)
 
+set(SREMESH_VERSION_MAJOR 1)
+set(SREMESH_VERSION_MINOR 1)
+set(SREMESH_VERSION_PATCH 1)
+set(SREMESH_VERSION
+${SREMESH_VERSION_MAJOR}.${SREMESH_VERSION_MINOR}.${SREMESH_VERSION_PATCH})
+
 set (CMAKE_CXX_STANDARD 11)
 
 set(CLI11_VER "1.9.0" CACHE STRING "CLI11 Version: see https://github.com/CLIUtils/CLI11/releases")
@@ -26,7 +32,8 @@ include_directories(${Mesh_INCLUDE_DIRS} ${Mesh_INCLUDE_DIRS}/Util)
 link_directories(${Mesh_LIBRARY_DIRS})
 
 include_directories(src)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY .)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (Remesh_SOURCES ${CMAKE_SOURCE_DIR}/src/SphericalRemeshing.cpp)
-add_executable(SphericalRemesh ${Remesh_SOURCES} wrapper/main.cpp ${SRemeshCLP})
+add_executable(SphericalRemesh ${Remesh_SOURCES} wrapper/main.cpp)
+target_compile_definitions(SphericalRemesh PRIVATE SREMESH_VERSION=\"v${SREMESH_VERSION}\")
 target_link_libraries(SphericalRemesh Mesh)

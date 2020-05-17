@@ -19,25 +19,28 @@ std::vector<std::string> property;
 void PARSE_ARGS(int argc, char **argv)
 {
     
-	std::string desc("Spherical Remeshing Tool v1.1\n"
+	std::string desc("Spherical Remeshing Tool "
+					 SREMESH_VERSION "\n"
 					 "Author: Ilwoo Lyu\n"
 					 );
 
 	CLI::App app(desc);
 
-	app.add_flag("--keepColor", keepC, "Keep color of the template model");
-	app.add_option("-s,--sphere", sphere, "Provide spherical model (unit sphere) used for the original spherical parameterization (vtk)")->required()->check(CLI::ExistingFile);
-	app.add_option("-i,--input", input, "Provide input subject surface model (vtk)")->check(CLI::ExistingFile);
-	app.add_option("-c,--coeff", coeff, "Provide spherical harmonic coefficients (txt)")->check(CLI::ExistingFile);
-	app.add_option("--deg", deg, "Provide Reconstruction level of spherical harmonicss")->check(CLI::NonNegativeNumber);
-	app.add_option("-o,--output", output, "Remeshe subject surface model (vtk)");
-	app.add_option("--outputProperty", outputProp, "Write output of properties after remeshing (no extension needed)");
-	app.add_option("-r,--ref", refSphere, "Provide reference model (unit sphere) for the final surface remeshing (vtk)")->check(CLI::ExistingFile);
-	app.add_option("--deform", deform, "Deform unit sphere by the given deformation field (vtk)");
-	app.add_option("--color", color, "Provide color map of the reference model that will assign the same color to the generated surface (txt)");
-	app.add_flag("--nneighbor", nneighbor, "Enable nearest neighbor interpolation");
-	app.add_option("--bary", bary, "Write barycentric coordinates (txt)");
-	app.add_option("-p,--property", property, "Provide properties that are included in the resulting mesh file (txt)")->check(CLI::ExistingFile);
+	app.add_option("-s,--sphere", sphere, "Specify spherical model (unit sphere) used for the original spherical parameterization (vtk)")->required()->check(CLI::ExistingFile)->group("Inputs");
+	app.add_option("-i,--input", input, "Specify input subject surface model (vtk)")->check(CLI::ExistingFile)->group("Inputs");
+	app.add_option("-c,--coeff", coeff, "Specify HSD spherical harmonic coefficients (txt)")->check(CLI::ExistingFile)->group("Inputs");
+	app.add_option("-r,--ref", refSphere, "Specify reference model (unit sphere) for the final surface remeshing (vtk)")->check(CLI::ExistingFile)->group("Inputs");
+	app.add_option("-p,--property", property, "Specify properties that are included in the resulting mesh files (txt)")->check(CLI::ExistingFile)->group("Inputs");
+	app.add_option("--color", color, "Specify color map of the reference model that will assign the same color to the generated surface (txt)")->check(CLI::ExistingFile)->group("Inputs");
+
+	app.add_option("-o,--output", output, "Specify output surface model (vtk)")->group("Outputs");
+	app.add_option("--outputProperty", outputProp, "Specify output of properties after remeshing (no extension needed)")->group("Outputs");
+	app.add_option("--deform", deform, "Specify deformed unit sphere by HSD deformation (vtk)")->group("Outputs");
+	app.add_option("--bary", bary, "Specify barycentric coordinates (txt)")->group("Outputs");
+
+	app.add_flag("--nneighbor", nneighbor, "Enable nearest neighbor interpolation")->group("Remeshing parameters");
+	app.add_option("--deg", deg, "Specify level of HSD spherical harmonics")->check(CLI::NonNegativeNumber)->group("Remeshing parameters");
+	app.add_flag("--keepColor", keepC, "Keep color of the template model")->group("Remeshing parameters");
 
 	try
 	{

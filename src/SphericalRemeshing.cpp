@@ -99,8 +99,18 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		cout << "Loading spherical harmonics information..\n";
 		// spherical harmonics information
 		fp = fopen(dfield, "r");
-		fscanf(fp, "%d", &m_degree);
-		fscanf(fp, "%f %f", &m_pole[0], &m_pole[1]);
+		if (fscanf(fp, "%d", &m_degree) == -1)
+		{
+			cout << "Fatal error: something goes wrong during I/O processing" << endl;
+			fclose(fp);
+			exit(1);
+		}
+		if (fscanf(fp, "%f %f", &m_pole[0], &m_pole[1]) == -1)
+		{
+			cout << "Fatal error: something goes wrong during I/O processing" << endl;
+			fclose(fp);
+			exit(1);
+		}
 	}
 	else
 	{
@@ -114,7 +124,14 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 	if (dfield != NULL)
 	{
 		for (int i = 0; i < n; i++)
-			fscanf(fp, "%f %f %f", &m_coeff[i], &m_coeff[n + i], &m_coeff[2 * n + i]);
+		{
+			if (fscanf(fp, "%f %f %f", &m_coeff[i], &m_coeff[n + i], &m_coeff[2 * n + i]) == -1)
+			{
+				cout << "Fatal error: something goes wrong during I/O processing" << endl;
+				fclose(fp);
+				exit(1);
+			}
+		}
 		fclose(fp);
 	}
 	else
@@ -180,7 +197,12 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 			float *refMap = new float[nProp];
 			for (int j = 0; j < nProp; j++)
 			{
-				fscanf(fp, "%f", &refMap[j]);
+				if (fscanf(fp, "%f", &refMap[j]) == -1)
+				{
+					cout << "Fatal error: something goes wrong during I/O processing" << endl;
+					fclose(fp);
+					exit(1);
+				}
 			}
 			fclose(fp);
 			m_refMap.push_back(refMap);
@@ -196,7 +218,12 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		for (int i = 0; i < m_remesh->nVertex(); i++)
 		{
 			int *color = new int[3];
-			fscanf(fp, "%d %d %d", &color[0], &color[1], &color[2]);
+			if (fscanf(fp, "%d %d %d", &color[0], &color[1], &color[2]) == -1)
+			{
+				cout << "Fatal error: something goes wrong during I/O processing" << endl;
+				fclose(fp);
+				exit(1);
+			}
 			if (!m_keepColor) m_color.push_back(color);
 			else m_color_base.push_back(color);
 		}
@@ -394,7 +421,7 @@ void SphericalRemeshing::saveDeformedSurface(const char *filename)
 	{
 		FILE *fp = fopen(filename, "a");
 		if (m_color.size() != m_sphere->nVertex()) fprintf(fp, "POINT_DATA %d\n", m_sphere->nVertex());
-		fprintf(fp, "FIELD ScalarData %d\n", m_refMap.size());
+		fprintf(fp, "FIELD ScalarData %d\n", (int)m_refMap.size());
 		for (int i = 0; i < m_refMap.size(); i++)
 		{
 			string name = m_property[i].substr(0, m_property[i].size() - 4);
