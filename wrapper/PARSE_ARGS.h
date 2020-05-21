@@ -13,6 +13,7 @@ std::string refSphere;
 std::string deform;
 std::string color;
 bool nneighbor = false;
+bool quite = false;
 std::string bary;
 std::vector<std::string> property;
 
@@ -25,6 +26,7 @@ void PARSE_ARGS(int argc, char **argv)
 					 );
 
 	CLI::App app(desc);
+	app.add_flag("--quite", quite, "Do not print outputs");
 
 	app.add_option("-s,--sphere", sphere, "Specify spherical model (unit sphere) used for the original spherical parameterization (vtk)")->required()->check(CLI::ExistingFile)->group("Inputs");
 	app.add_option("-i,--input", input, "Specify input subject surface model (vtk)")->check(CLI::ExistingFile)->group("Inputs");

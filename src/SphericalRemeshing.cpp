@@ -2,7 +2,7 @@
 *	SphericalRemeshing.cpp
 *
 *	Release: Sep 2016
-*	Update: Jul 2019
+*	Update: May 2020
 *
 *	Vanderbilt University
 *	Electrical Engineering and Computer Science
@@ -25,12 +25,13 @@ SphericalRemeshing::~SphericalRemeshing(void)
 	delete [] m_z;
 }
 
-SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t, const char *colormap, vector<string> property, bool interpolation, int deg, bool backward)
+SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t, const char *colormap, vector<string> property, bool interpolation, int deg, bool verbose, bool backward)
 {
+	m_verbose = verbose;
 	m_keepColor = keepColor;
 	if (subject != NULL)
 	{
-	    cout << "loading subject surface model..\n";
+	    if (m_verbose) cout << "loading subject surface model..\n";
 	    m_subj = new Mesh();
 	    m_subj->openFile(subject);
 	    
@@ -56,7 +57,7 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
     }
     
 	// unit sphere information
-	cout << "Loading unit sphere information..\n";
+	if (m_verbose) cout << "Loading unit sphere information..\n";
 	m_sphere_subj = new Mesh();
 	m_sphere_subj->openFile(sphere);
 	int nv = m_sphere_subj->nVertex();
@@ -96,7 +97,7 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 
 	if (dfield != NULL)
 	{
-		cout << "Loading spherical harmonics information..\n";
+		if (m_verbose) cout << "Loading spherical harmonics information..\n";
 		// spherical harmonics information
 		fp = fopen(dfield, "r");
 		if (fscanf(fp, "%d", &m_degree) == -1)
@@ -150,7 +151,7 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 	const float *tan2 = (Vector(fmean).cross(Vector(m_tan1))).unit().fv();
 	m_tan2[0] = tan2[0]; m_tan2[1] = tan2[1]; m_tan2[2] = tan2[2];
 
-	cout << "Initializing deformation..\n";
+	if (m_verbose) cout << "Initializing deformation..\n";
 	// deform vertex
 	float eps = 0.0f;
 	float *Y = new float[n];
@@ -184,13 +185,13 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 	
 	if (property != vector<string>())
 	{
-		cout << "Load properties..\n";
+		if (m_verbose) cout << "Load properties..\n";
 		int prop = property.size();
-		cout << "\t" << prop << " found!\n";
+		if (m_verbose) cout << "\t" << prop << " found!\n";
 		int nProp = m_sphere_subj->nVertex();
 		for (int i = 0; i < prop; i++)
 		{
-			cout << "\t" << property[i].c_str() << endl;
+			if (m_verbose) cout << "\t" << property[i].c_str() << endl;
 			fp = fopen(property[i].c_str(), "r");
 			char line[1024];
 		
@@ -208,12 +209,12 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 			m_refMap.push_back(refMap);
 		}
 	}
-	cout << "Tree initialization..\n";
+	if (m_verbose) cout << "Tree initialization..\n";
 	m_tree = new AABB_Sphere(m_sphere_subj);
 
 	if (colormap != NULL)
 	{
-		cout << "Loading color information..\n";
+		if (m_verbose) cout << "Loading color information..\n";
 		fp = fopen(colormap, "r");
 		for (int i = 0; i < m_remesh->nVertex(); i++)
 		{
@@ -232,13 +233,13 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 
     if (subject != NULL)
     {
-	    cout << "Remeshing..\n";
+	    if (m_verbose) cout << "Remeshing..\n";
 	    deformSurface();
 	}
 	
 	if (property != vector<string>())
 	{
-		cout << "Property transferring..\n";
+		if (m_verbose) cout << "Property transferring..\n";
 		deformData();
 	}
 }
@@ -361,7 +362,7 @@ void SphericalRemeshing::deformSurface()
 				d_c[0] = dataInterpolation(m_color_base, id, coeff, m_sphere_subj, 0);
 				d_c[1] = dataInterpolation(m_color_base, id, coeff, m_sphere_subj, 1);
 				d_c[2] = dataInterpolation(m_color_base, id, coeff, m_sphere_subj, 2);
-				cout << d_c[0] << " " << d_c[1] << " " << d_c[2] << endl;
+				//cout << d_c[0] << " " << d_c[1] << " " << d_c[2] << endl;
 				m_color.push_back(d_c);
 			}
 		}

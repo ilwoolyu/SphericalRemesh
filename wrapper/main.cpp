@@ -23,27 +23,27 @@ int main(int argc, char **argv)
 	//if (!coeff.empty())  cout << "deformation: " << dfield << endl;
 	//if (!ref.empty()) cout << "reference: " << reference << endl;
 	
-	SR = new SphericalRemeshing(subject, sphere_, dfield, keepC, reference, colormap, property, !nneighbor, deg);
+	SR = new SphericalRemeshing(subject, sphere_, dfield, keepC, reference, colormap, property, !nneighbor, deg, !quite);
 
-	cout << "Write output surface model..\n";
+	if (!quite) cout << "Write output surface model..\n";
 	if (!output.empty())
 	{
-		cout << output.c_str() << endl;
+		if (!quite) cout << output.c_str() << endl;
 		SR->saveDeformedSurface(output.c_str());
 	}
 	if (dsphere != NULL)
 	{
-		cout << dsphere << endl;
+		if (!quite) cout << dsphere << endl;
 		SR->saveDeformedSphere(dsphere);
 	}
 	if (!outputProp.empty())
 	{
-		cout << outputProp.c_str() << endl;
+		if (!quite) cout << outputProp.c_str() << endl;
 		SR->saveDeformedProperty(outputProp.c_str());
 	}
 	if (!bary.empty())
 	{
-		cout << bary.c_str() << endl;
+		if (!quite) cout << bary.c_str() << endl;
 		SR->saveBary(bary.c_str());
 	}
 

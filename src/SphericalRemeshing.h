@@ -25,7 +25,7 @@ class SphericalRemeshing
 public:
 	SphericalRemeshing(void);
 	~SphericalRemeshing(void);
-	SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t = NULL, const char *colormap = NULL, vector<string> property = vector<string>(), bool interpolation = true, int deg = -1, bool backward = false);
+	SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t = NULL, const char *colormap = NULL, vector<string> property = vector<string>(), bool interpolation = true, int deg = -1, bool verbose = true, bool backward = false);
 	void saveDeformedSurface(const char *filename);
 	void saveDeformedSphere(const char *filename);
 	void saveDeformedProperty(const char *filename);
@@ -50,6 +50,7 @@ private:
 	bool m_interpolation;
 	bool m_backward;
 	bool m_keepColor;
+	bool m_verbose;
 	Mesh *m_sphere, *m_sphere_subj, *m_subj, *m_remesh;
 	vector<float *> m_refMap;
 	vector<float *> m_deData;
