@@ -25,10 +25,11 @@ SphericalRemeshing::~SphericalRemeshing(void)
 	delete [] m_z;
 }
 
-SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t, const char *colormap, vector<string> property, bool interpolation, int deg, bool verbose, bool backward)
+SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t, const char *colormap, vector<string> property, bool interpolation, int deg, bool verbose, const char *pbtype, bool backward)
 {
 	m_verbose = verbose;
 	m_keepColor = keepColor;
+	m_pbtype = pbtype;
 	if (subject != NULL)
 	{
 	    if (m_verbose) cout << "loading subject surface model..\n";
@@ -161,10 +162,9 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		{
 			float v1[3];
 			Vertex *v = (Vertex *)m_sphere->vertex(i);
-			// skip poles
 			SphericalHarmonics::basis(m_degree, (float *)v->fv(), Y);
 			reconsCoord(v->fv(), v1, Y, m_coeff, m_degree, m_pole, m_tan1, m_tan2);
-			MathVector V(v1); V.unit();
+			Vector V(v1); V.unit();
 			v->setVertex(V.fv());
 		}
 	}
@@ -174,10 +174,9 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		{
 			float v1[3];
 			Vertex *v = (Vertex *)m_sphere_subj->vertex(i);
-			// skip poles
 			SphericalHarmonics::basis(m_degree, (float *)v->fv(), Y);
 			reconsCoord(v->fv(), v1, Y, m_coeff, m_degree, m_pole, m_tan1, m_tan2);
-			MathVector V(v1); V.unit();
+			Vector V(v1); V.unit();
 			v->setVertex(V.fv());
 		}
 	}
@@ -452,11 +451,37 @@ void SphericalRemeshing::saveDeformedProperty(const char *filename)
 			}
 			name = name.substr(found, name.size() - found);
 			char fullname[1024];
-			sprintf(fullname, "%s.%s.txt", filename, name.c_str());
-			
-			FILE *fp = fopen(fullname, "w");
-			for (int j = 0; j < m_sphere->nVertex(); j++)
-				fprintf(fp, "%f\n", m_deData[i][j]);
+			if (m_pbtype == NULL)
+				sprintf(fullname, "%s.%s.txt", filename, name.c_str());
+			else
+				sprintf(fullname, "%s.%s.dat", filename, name.c_str());
+
+			const char *btype = (m_pbtype == NULL) ? "w": "wb";
+			FILE *fp = fopen(fullname, btype);
+			if (m_pbtype != NULL && strcmp(m_pbtype, "float") == 0)
+			{
+				fwrite(m_deData[i], sizeof(float), m_sphere->nVertex(), fp);
+			}
+			else
+			{
+				for (int j = 0; j < m_sphere->nVertex(); j++)
+				{
+					if (m_pbtype == NULL)
+					{
+						fprintf(fp, "%f\n", m_deData[i][j]);
+					}
+					else if (strcmp(m_pbtype, "int") == 0)
+					{
+						int d = (int)m_deData[i][j];
+						fwrite(&d, sizeof(int), 1, fp);
+					}
+					else if (strcmp(m_pbtype, "double") == 0)
+					{
+						double d = (double)m_deData[i][j];
+						fwrite(&d, sizeof(double), 1, fp);
+					}
+				}
+			}
 			fclose(fp);
 		}
 	}

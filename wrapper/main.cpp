@@ -16,6 +16,8 @@ int main(int argc, char **argv)
 	if (!deform.empty()) dsphere = (char *) deform.c_str();
 	char *colormap = NULL;
 	if (!color.empty()) colormap = (char *) color.c_str();
+	char *btype = NULL;
+	if (!ftype.empty()) btype = (char *) ftype.c_str();
 	SphericalRemeshing *SR;
 
 	//if (!input.empty()) cout << "subject: " << subject << endl;
@@ -23,7 +25,7 @@ int main(int argc, char **argv)
 	//if (!coeff.empty())  cout << "deformation: " << dfield << endl;
 	//if (!ref.empty()) cout << "reference: " << reference << endl;
 	
-	SR = new SphericalRemeshing(subject, sphere_, dfield, keepC, reference, colormap, property, !nneighbor, deg, !quite);
+	SR = new SphericalRemeshing(subject, sphere_, dfield, keepC, reference, colormap, property, !nneighbor, deg, !quite, btype);
 
 	if (!quite) cout << "Write output surface model..\n";
 	if (!output.empty())

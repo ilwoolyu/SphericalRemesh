@@ -17,6 +17,8 @@ bool quite = false;
 std::string bary;
 std::vector<std::string> property;
 
+std::string ftype = "";
+
 void PARSE_ARGS(int argc, char **argv)
 {
     
@@ -39,6 +41,7 @@ void PARSE_ARGS(int argc, char **argv)
 	app.add_option("--outputProperty", outputProp, "Specify output of properties after remeshing (no extension needed)")->group("Outputs");
 	app.add_option("--deform", deform, "Specify deformed unit sphere by HSD deformation (vtk)")->group("Outputs");
 	app.add_option("--bary", bary, "Specify barycentric coordinates (txt)")->group("Outputs");
+	app.add_option("--ftype", ftype, "Specify data type - output will be saved as a binary format (dat)")->check(CLI::IsMember({"int", "float","double"}, CLI::ignore_case, CLI::ignore_underscore))->group("Outputs");
 
 	app.add_flag("--nneighbor", nneighbor, "Enable nearest neighbor interpolation")->group("Remeshing parameters");
 	app.add_option("--deg", deg, "Specify level of HSD spherical harmonics")->check(CLI::NonNegativeNumber)->group("Remeshing parameters");
