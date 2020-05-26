@@ -23,10 +23,13 @@ SphericalRemeshing::~SphericalRemeshing(void)
 	delete [] m_x;
 	delete [] m_y;
 	delete [] m_z;
+	delete [] m_v0;
+	delete [] m_Y;
 }
 
 SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t, const char *colormap, vector<string> property, bool interpolation, int deg, bool verbose, const char *pbtype, bool backward)
 {
+	m_subject = subject;
 	m_verbose = verbose;
 	m_keepColor = keepColor;
 	m_pbtype = pbtype;
@@ -154,33 +157,28 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 
 	if (m_verbose) cout << "Initializing deformation..\n";
 	// deform vertex
-	float eps = 0.0f;
-	float *Y = new float[n];
-	if (backward)
+	if (m_backward)
 	{
+		m_v0 = new float[m_sphere->nVertex() * 3];
+		m_Y = new float[m_sphere->nVertex() * n];
 		for (int i = 0; i < m_sphere->nVertex(); i++)
 		{
-			float v1[3];
 			Vertex *v = (Vertex *)m_sphere->vertex(i);
-			SphericalHarmonics::basis(m_degree, (float *)v->fv(), Y);
-			reconsCoord(v->fv(), v1, Y, m_coeff, m_degree, m_pole, m_tan1, m_tan2);
-			Vector V(v1); V.unit();
-			v->setVertex(V.fv());
+			memcpy(&m_v0[i * 3], (float *)v->fv(), sizeof(float) * 3);
+			SphericalHarmonics::basis(m_degree, (float *)v->fv(), &m_Y[i * n]);
 		}
 	}
 	else
 	{
+		m_v0 = new float[m_sphere_subj->nVertex() * 3];
+		m_Y = new float[m_sphere_subj->nVertex() * n];
 		for (int i = 0; i < m_sphere_subj->nVertex(); i++)
 		{
-			float v1[3];
 			Vertex *v = (Vertex *)m_sphere_subj->vertex(i);
-			SphericalHarmonics::basis(m_degree, (float *)v->fv(), Y);
-			reconsCoord(v->fv(), v1, Y, m_coeff, m_degree, m_pole, m_tan1, m_tan2);
-			Vector V(v1); V.unit();
-			v->setVertex(V.fv());
+			memcpy(&m_v0[i * 3], (float *)v->fv(), sizeof(float) * 3);
+			SphericalHarmonics::basis(m_degree, (float *)v->fv(), &m_Y[i * n]);
 		}
 	}
-	delete [] Y;
 	
 	if (property != vector<string>())
 	{
@@ -229,14 +227,48 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		}
 		fclose(fp);
 	}
+}
 
-    if (subject != NULL)
-    {
+int SphericalRemeshing::degree(void)
+{
+	return m_degree;
+}
+
+void SphericalRemeshing::deform(int degree)
+{
+	if (degree >= 0) degree = (degree > m_degree) ? m_degree: degree;
+	else degree = 0;
+	int n = (m_degree + 1) * (m_degree + 1);
+	if (m_backward)
+	{
+		for (int i = 0; i < m_sphere->nVertex(); i++)
+		{
+			float v1[3];
+			Vertex *v = (Vertex *)m_sphere->vertex(i);
+			reconsCoord(&m_v0[i * 3], v1, &m_Y[i * n], m_coeff, degree, m_pole, m_tan1, m_tan2);
+			Vector V(v1); V.unit();
+			v->setVertex(V.fv());
+		}
+	}
+	else
+	{
+		for (int i = 0; i < m_sphere_subj->nVertex(); i++)
+		{
+			float v1[3];
+			Vertex *v = (Vertex *)m_sphere_subj->vertex(i);
+			reconsCoord(&m_v0[i * 3], v1, &m_Y[i * n], m_coeff, degree, m_pole, m_tan1, m_tan2);
+			Vector V(v1); V.unit();
+			v->setVertex(V.fv());
+		}
+	}
+	m_tree->update();
+	if (m_subject != NULL)
+	{
 	    if (m_verbose) cout << "Remeshing..\n";
 	    deformSurface();
 	}
 	
-	if (property != vector<string>())
+	if (m_property != vector<string>())
 	{
 		if (m_verbose) cout << "Property transferring..\n";
 		deformData();
@@ -252,8 +284,8 @@ void SphericalRemeshing::reconsCoord(const float *v0, float *v1, float *Y, float
 	for (int i = 0; i < n; i++)
 	{
 		delta[0] += Y[i] * coeff[i];
-		delta[1] += Y[i] * coeff[(degree + 1) * (degree + 1) + i];
-		delta[2] += Y[i] * coeff[2 * (degree + 1) * (degree + 1) + i];
+		delta[1] += Y[i] * coeff[(m_degree + 1) * (m_degree + 1) + i];
+		delta[2] += Y[i] * coeff[2 * (m_degree + 1) * (m_degree + 1) + i];
 	}
 //	delta[1] /= 2; delta[2] /= 2;
 	
@@ -343,6 +375,9 @@ float SphericalRemeshing::dataNN(float *refMap, int index, float *coeff, Mesh *m
 
 void SphericalRemeshing::deformSurface()
 {
+	for (int i = 0; i < m_color.size(); i++)
+		delete [] m_color[i];
+	m_color.clear();
 	for (int i = 0; i < m_sphere->nVertex(); i++)
 	{
 		float coeff[3];
@@ -378,6 +413,9 @@ void SphericalRemeshing::deformSurface()
 
 void SphericalRemeshing::deformData()
 {
+	for (int k = 0; k < m_deData.size(); k++)
+		delete [] m_deData[k];
+	m_deData.clear();
 	for (int k = 0; k < m_refMap.size(); k++)
 	{
 		float *deData = new float[m_sphere->nVertex()];

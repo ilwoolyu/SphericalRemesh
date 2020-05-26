@@ -7,6 +7,7 @@ std::string sphere;
 std::string input;
 std::string coeff;
 int deg = -1;
+int deg0 = -1;
 std::string output;
 std::string outputProp;
 std::string refSphere;
@@ -45,6 +46,7 @@ void PARSE_ARGS(int argc, char **argv)
 
 	app.add_flag("--nneighbor", nneighbor, "Enable nearest neighbor interpolation")->group("Remeshing parameters");
 	app.add_option("--deg", deg, "Specify level of HSD spherical harmonics")->check(CLI::NonNegativeNumber)->group("Remeshing parameters");
+	app.add_option("--deg0", deg0, "Specify base level of HSD spherical harmonics to begin with")->check(CLI::NonNegativeNumber)->group("Remeshing parameters");
 	app.add_flag("--keepColor", keepC, "Keep color of the template model")->group("Remeshing parameters");
 
 	try

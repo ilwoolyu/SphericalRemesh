@@ -2,7 +2,7 @@
 *	SphericalRemeshing.cpp
 *
 *	Release: Sep 2016
-*	Update: April 2017
+*	Update: May 2020
 *
 *	Vanderbilt University
 *	Electrical Engineering and Computer Science
@@ -26,6 +26,8 @@ public:
 	SphericalRemeshing(void);
 	~SphericalRemeshing(void);
 	SphericalRemeshing(const char *subject, const char *sphere, const char *dfield, bool keepColor, const char *sphere_t = NULL, const char *colormap = NULL, vector<string> property = vector<string>(), bool interpolation = true, int deg = -1, bool verbose = true, const char *pbtype = NULL, bool backward = false);
+	int degree(void);
+	void deform(int degree);
 	void saveDeformedSurface(const char *filename);
 	void saveDeformedSphere(const char *filename);
 	void saveDeformedProperty(const char *filename);
@@ -58,6 +60,9 @@ private:
 	vector<int *> m_color;
 	vector<int *> m_color_base;
 	const char *m_pbtype;
+	const char *m_subject;
+	float *m_Y;
+	float *m_v0;
 };
 
 
