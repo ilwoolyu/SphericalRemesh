@@ -508,7 +508,12 @@ void SphericalRemeshing::saveDeformedProperty(const char *filename)
 					{
 						fprintf(fp, "%f\n", m_deData[i][j]);
 					}
-					else if (strcmp(m_pbtype, "int") == 0)
+					else if (strcmp(m_pbtype, "int16") == 0)
+					{
+						short d = (short)m_deData[i][j];
+						fwrite(&d, sizeof(short), 1, fp);
+					}
+					else if (strcmp(m_pbtype, "int") == 0 || strcmp(m_pbtype, "int32") == 0)
 					{
 						int d = (int)m_deData[i][j];
 						fwrite(&d, sizeof(int), 1, fp);
