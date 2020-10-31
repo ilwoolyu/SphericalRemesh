@@ -3,6 +3,13 @@
 ## Description
 This tool supports sphere mesh manipulation including rigid/non-rigid deformation as well as re-tessellation of the input sphere. This tool has been developed to support [HSD](https://github.com/ilwoolyu/HSD) that offers decomposable spherical deformation. In [HSD](https://github.com/ilwoolyu/HSD), the spherical registration can be achieved by fitting spherical harmonics coefficients. This tool takes spherical harmonics coefficients to deform the input (moving) sphere mesh and help adjust the number of the basis functions to control a level of deformation, which is useful for <i>**spherical data augmentation**</i>. The output spherical data can also be re-tessellated regarding a reference sphere mesh, by which the output data have the same structure as that of the reference sphere mesh.
 
+## Installation
+You can download and compile the source code using <a href="https://cmake.org/">CMake</a>. You can also download the [singularity image](https://vanderbilt.box.com/v/cmorph-release) or pull <a href="https://hub.docker.com/r/ilwoolyu/cmorph/">docker image</a>:
+```
+$ docker pull ilwoolyu/cmorph:<version>
+```
+Click [here](https://hub.docker.com/r/ilwoolyu/cmorph) to check how to use the tool.
+
 ## Requirements for build
 * [MeshLib](https://github.com/ilwoolyu/MeshLib)
 
