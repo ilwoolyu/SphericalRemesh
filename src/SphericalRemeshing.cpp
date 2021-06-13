@@ -2,12 +2,12 @@
 *	SphericalRemeshing.cpp
 *
 *	Release: Sep 2016
-*	Update: May 2020
+*	Update: June 2021
 *
-*	Vanderbilt University
-*	Electrical Engineering and Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoo.lyu@vanderbilt.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #include <cstring>
@@ -164,8 +164,8 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		for (int i = 0; i < m_sphere->nVertex(); i++)
 		{
 			Vertex *v = (Vertex *)m_sphere->vertex(i);
-			memcpy(&m_v0[i * 3], (float *)v->fv(), sizeof(float) * 3);
-			SphericalHarmonics::basis(m_degree, (float *)v->fv(), &m_Y[i * n]);
+			memcpy(&m_v0[i * 3], v->fv(), sizeof(float) * 3);
+			SphericalHarmonics::basis(m_degree, v->fv(), &m_Y[i * n]);
 		}
 	}
 	else
@@ -175,8 +175,8 @@ SphericalRemeshing::SphericalRemeshing(const char *subject, const char *sphere, 
 		for (int i = 0; i < m_sphere_subj->nVertex(); i++)
 		{
 			Vertex *v = (Vertex *)m_sphere_subj->vertex(i);
-			memcpy(&m_v0[i * 3], (float *)v->fv(), sizeof(float) * 3);
-			SphericalHarmonics::basis(m_degree, (float *)v->fv(), &m_Y[i * n]);
+			memcpy(&m_v0[i * 3], v->fv(), sizeof(float) * 3);
+			SphericalHarmonics::basis(m_degree, v->fv(), &m_Y[i * n]);
 		}
 	}
 	
@@ -382,7 +382,7 @@ void SphericalRemeshing::deformSurface()
 	{
 		float coeff[3];
 		Vertex *v = (Vertex *)m_sphere->vertex(i);
-		int id = m_tree->closestFace((float *)v->fv(), coeff);
+		int id = m_tree->closestFace(v->fv(), coeff);
 		float d_v[3];
 		if (m_interpolation)
 		{
@@ -423,7 +423,7 @@ void SphericalRemeshing::deformData()
 		{
 			float coeff[3];
 			Vertex *v = (Vertex *)m_sphere->vertex(i);
-			int id = m_tree->closestFace((float *)v->fv(), coeff);
+			int id = m_tree->closestFace(v->fv(), coeff);
 			float d;
 			if (m_interpolation)
 			{
@@ -542,7 +542,7 @@ void SphericalRemeshing::saveBary(const char *filename)
 	{
 		float coeff[3];
 		Vertex *v = (Vertex *)m_sphere->vertex(i);
-		int id = m_tree->closestFace((float *)v->fv(), coeff);
+		int id = m_tree->closestFace(v->fv(), coeff);
 		fprintf(fp, "%d %f %f %f\n", id, coeff[0], coeff[1], coeff[2]);
 	}
 	fclose(fp);

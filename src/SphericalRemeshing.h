@@ -2,12 +2,12 @@
 *	SphericalRemeshing.cpp
 *
 *	Release: Sep 2016
-*	Update: May 2020
+*	Update: June 2021
 *
-*	Vanderbilt University
-*	Electrical Engineering and Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoo.lyu@vanderbilt.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #pragma once
